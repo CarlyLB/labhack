@@ -12,8 +12,11 @@
   "author": "Suncorp Labhack",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "botbuilder": "^3.9.1",
     "dotenv-extended": "^2.0.1",
-    "restify": "^5.2.0"
+    "request-promise": "^4.2.1",
+    "restify": "^5.2.0",
+    "sprintf-js": "^1.1.1"
   }
 }

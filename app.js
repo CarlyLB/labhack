@@ -1,79 +1,234 @@
-/*
-NPM
-*/
+// This loads environment variables from .env file -- uncomment for production /
+// remote bot server
+// Comment for local testing
 //require('dotenv-extended').load();
+ 
+// TODO
+// some utility intent for showing demo
+// e.g. choosing users, show underlying data
+ 
+// Setup Restify Server
 var restify = require('restify');
 var builder = require('botbuilder');
+var pd = require('./policy-details'); 
+var Promise = require('bluebird');
+var sprintf = require('sprintf-js').sprintf; 
+var fs = require('fs');
+var util = require('util');
 
-/*
-Setup
-*/
-//Setup restify server
+ 
+// Proxy settings
+// var globalTunnel = require('global-tunnel');
+ //globalTunnel.initialize();
+//=========================================================
+// Bot Setup
+//=========================================================
+// Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function(){
+server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
-
-//Setup chat bot
+// Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
+ 
+server.post('/api/messages', connector.listen());
 var bot = new builder.UniversalBot(connector);
+ 
+// LUIS model for intent and entities extraction
+//var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/bf0d182e-6437-497a-9998-5cb2c96e0f1c?subscription-key=3c96b72c44d947fea660e0ecf0560be0&staging=true&verbose=true&timezoneOffset=0&q=';
+var model = process.env.LUIS_URL || 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/7a7308a7-7f10-48b9-92ea-7cf400006895?subscription-key=3c96b72c44d947fea660e0ecf0560be0&verbose=true&timezoneOffset=0&q=';
+var luis = new builder.LuisRecognizer(model);
+ 
+//globalTunnel.end();
+// Create our IntentDialog and add recognizers
+// won't work properly without this!!
+var demoRecognizer = new builder.RegExpRecognizer( "startdemo", /^(startdemo)/i);
+var intents = new builder.IntentDialog({ recognizers: [luis, demoRecognizer] });
+intents.onDefault('dialogStartDemo');
+ 
+// Match our "Greetings" and "Farewell" intents with their dialogs
+// Each intent must be handled by a handler, i.e. IntentDialog
+intents.matches('goodbye', 'dialogBye');
+intents.matches('greeting', 'dialogGreetings');
+intents.matches('startdemo', 'dialogStartDemo');
+ 
+bot.dialog('/', intents);
+ 
+bot.use(builder.Middleware.dialogVersion({
+            version: 1.0,
+            message: 'Conversation restarted by a main update',
+            resetCommand: /^reset/i
+        }));
+ 
+//=========================================================
+// Bots Dialogs
+//=========================================================
+// Messages to use
+var messages = {
+    select_scenario: 'Please select a scenario for the labhack demo',
+    intro: 'Hi %s, I\'m Daisy....' ,
+    get_started: ' There are a few things I need from you, do you have few minutes to go through it now?',
+    help_prompt: 'Hi %s, how can I help you today?',
+    nice_day: 'Have a nice day.',
+    contact_detail: 'Last thing, we have the following details on file for you:'+
+                    '\n\n\n  * Mobile : %s'+
+                    '\n\n\n  * Email  : %s'
+}
 
-//Open connection to database before listening on server
-server.post('api/messages', connector.listen());
-
-/*
-Dialogs
-*/
-//Intent dialog
-//var luisUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/109f950e-11c6-462a-b84c-f3454a1fc79e?subscription-key=61fe645b6056470cba59a88b0d6d927d&verbose=true';
-//var luisRecognizer = new builder.LuisRecognizer(luisUrl);
-//var intentDialog = new builder.IntentDialog({recognizers: [luisRecognizer]});
-//
-//Root dialog
-/*
-bot.dialog('/', intentDialog);
-intentDialog.onDefault(builder.DialogAction.send('Sorry, I didn\'t understand that.'));
-intentDialog.matches('Greeting', '/greetingDialog');
-intentDialog.matches('Size', '/sizeDialog')
-intentDialog.matches('Distance', '/distanceDialog');
-intentDialog.matches('Life', '/lifeDialog');
-*/
-
-/*
-bot.dialog('/greetingDialog', 
-    function(session)
-    {
-        session.endDialog('Hi! I\'m Chatty. Ask me questions you have about Marketplace!');
+var scenario = ['Laptop','Building','Car']
+//var customers = ['22', '39', '61'];
+ 
+// Utility to start demo and help navigate between scenarios
+bot.dialog('dialogStartDemo', [
+    function (session) { 
+   
+        builder.Prompts.choice(session, messages.select_scenario, scenario,
+            {listStyle: builder.ListStyle.button});
+    },
+    function (session, results) {
+        session.userData.policy = pd.lookupPolicy(results.response.entity);
+        session.beginDialog('dialogGreetings');
     }
-)
-
-bot.dialog('/sizeDialog',
-    function(session)
-    {
-        session.endDialog('Mars has a radius of 3,390km, compared to Earth\'s radius which is 6,371km');
+]);
+ 
+bot.dialog('dialogGreetings', [
+    function (session) {
+        // for demo
+        session.conversationData.firstTime = true;
+        // For demo purpose we don't persist beyond conversation
+        if (session.conversationData.firstTime) {
+            session.send(messages.intro, session.userData.policy.firstName);
+            //session.conversationData.firstTime = false; 
+        }
+        session.beginDialog('dialogMain');
     }
-)
-
-bot.dialog('/distanceDialog',
-    function(session)
-    {
-        session.endDialog('Mars is pretty far away from your home planet, Earth. On average, the distance is 225 million km.');
+]);
+bot.dialog('dialogBye', [
+    function (session) {
+        session.endDialog('Farewell!');
     }
-)
-
-bot.dialog('/lifeDialog', 
-    function(session)
-    {
-        session.endDialog('Yes, there is life on Mars although not yet discovered by primitive humans.');
+]);
+bot.dialog('Help', [
+    function (session) {
+      session.endDialog("I can't help you right now...");
     }
-) 
-*/
+]); 
 
-bot.dialog('/', function (session) {
-    builder.Prompts.text(session, 'Hi! I\'m Daisy, how can I help you today?.',   
-        {listStyle: builder.ListStyle.button})  
-});
 
+bot.dialog('dialogLaptop', [
+    function (session, results, next) { 
+                session.send('Great question!');
+                session.sendTyping();
+                session.send('I can see here that you have Suncorp Classics Advantages Home and Contents policy and that you have taken out the optional Personal Valuables Unspecified Items Cover.');
+                session.sendTyping();
+                session.send('With this cover we would pay up to $1,000 towards your damaged laptop.');
+                session.sendTyping();
+                builder.Prompts.text(session, 'Do you know how much your laptop is worth?');
+            },
+        
+            function (session, result) {
+                session.send('You might want to consider adding specific items cover to your policy so that you are covered for the full value of your laptop.');
+                session.sendTyping();
+                builder.Prompts.choice(session, 'Would you like me to take you to your policy so that you can obtain a quote for this additional cover?', 'Yes|No',
+                        {listStyle: builder.ListStyle.button}); 
+            },
+            
+            function (session, result) {
+                            if (result.response.entity === 'Yes')  {
+                                session.send('I will take you there now');
+                                session.sendTyping();
+                                session.send('Bot links Customer on Suncorp Marketplace where they can take out additional cover');
+                                session.endConversation(messages.nice_day);
+                            } else {
+                                session.endConversation(messages.nice_day);
+                            }
+                        },
+]); 
+
+
+bot.dialog('dialogBuilding', [
+    function (session, results, next) { 
+                //session.send('Great question!');
+                session.sendTyping();
+                session.send('Yes, I can see that your GIO Home and Contents insurance covers building damage of up to $500,000');
+                session.sendTyping();
+                session.send('Did you know that AAMI comprehensive insurance covers the complete replacement of your home with no limit.');
+                session.sendTyping();
+                builder.Prompts.choice(session, 'Is this something you might be interested in?', 'Yes Please!|No thanks',
+                {listStyle: builder.ListStyle.button}); 
+            },
+        
+            function (session, result) {
+                            if (result.response.entity === 'Yes Please!')  {
+                                session.send('I will take you there now');
+                                session.sendTyping();
+                                session.send('Bot links Customer to AAMI quote');
+                                session.endConversation(messages.nice_day);
+                            } else {
+                                session.endConversation(messages.nice_day);
+                            }
+                        },
+]); 
+
+bot.dialog('dialogCar', [
+    function (session, results, next) { 
+                //session.send('Great question!');
+                session.sendTyping();
+                session.send('Does this have anything to do with your transactions at 3am last night? :o');
+                session.sendTyping();
+                session.send('You may be suprised to know that your replacement keys are actually covered by your AAMI comprehensive car insurance!');
+                session.sendTyping();
+                session.send('We\'ll cover you for up to $1,000 to replace and recode your keys.');
+                session.sendTyping();
+                session.send('I can see that you also have the optional AAMI Roadside Assist, so we can send someone out to let you into your car as well!.');
+                session.sendTyping();
+                session.endConversation();
+    
+            }
+]); 
+
+
+// Main journey for checking for coverage
+bot.dialog('dialogMain', [  
+
+    function (session) { 
+        session.sendTyping();
+        builder.Prompts.text(session, 'How can I help you today?');
+    },
+
+    function (session, results, next) { 
+        session.sendTyping();
+        builder.Prompts.text(session, 'Sure, tell me what you would like to know?');
+   
+    },
+
+ //
+    function (session, results, next) { 
+   if (session.userData.policy.scenario === 'Laptop') 
+    {     session.beginDialog('dialogLaptop');
+    } 
+
+    else if (session.userData.policy.scenario === 'Building') 
+        {
+            session.beginDialog('dialogBuilding');
+
+        }
+
+        else if (session.userData.policy.scenario === 'Car') 
+            {
+                session.beginDialog('dialogCar');
+             }
+
+    else {session.send('I\'m still in training and not sure i can answer your question confidently.  Try again?')
+    }
+},
+
+/// Dialog close
+    function (session, result, next) {
+        session.sendTyping();
+        session.endConversation(messages.nice_day);
+    } , 
+]); 
