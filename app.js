@@ -69,7 +69,7 @@ bot.use(builder.Middleware.dialogVersion({
 // Messages to use
 var messages = {
     select_scenario: 'Please select a scenario for the labhack demo',
-    intro: 'Hi %s, I\'m Benjamin BOTton....' ,
+    intro: 'Hi %s, I\'m Benjamin Botton....' ,
     get_started: ' There are a few things I need from you, do you have few minutes to go through it now?',
     help_prompt: 'Hi %s, how can I help you today?',
     nice_day: 'Have a nice day.',
