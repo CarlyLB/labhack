@@ -1,0 +1,17 @@
+{ "engines": {
+  "node": "6.11.1"
+},
+  "name": "labhack",
+  "version": "1.0.0",
+  "description": "Suncorp Labhack entry",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Suncorp Labhack",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.9.1",
+    "restify": "^5.2.0"
+  }
+}
