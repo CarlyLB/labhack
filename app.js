@@ -176,9 +176,9 @@ bot.dialog('dialogSUNUpdateCover' ,
                                                                     "items": [
                                                                         {
                                                                             "type": "TextBlock",
-                                                                            "text": "Suncorp Marketplace",
+                                                                            "text": "Marketplace",
                                                                             "weight": "normal",
-                                                                            "size": "extraLarge"
+                                                                            "size": "Large"
                                                                         },
                                                                        
                                                                         {
@@ -257,9 +257,9 @@ bot.dialog('dialogSUNUpdateCover' ,
                                                                                                 "items": [
                                                                                                     {
                                                                                                         "type": "TextBlock",
-                                                                                                        "text": "Suncorp Marketplace",
+                                                                                                        "text": "Marketplace",
                                                                                                         "weight": "normal",
-                                                                                                        "size": "extraLarge"
+                                                                                                        "size": "Large"
                                                                                                     },
                                                                                                    
                                                                                                     {
