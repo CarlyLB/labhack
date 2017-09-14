@@ -78,7 +78,7 @@ var messages = {
                     '\n\n\n  * Email  : %s'
 }
 
-var scenario = ['Laptop','Building','Car']
+var scenario = ['Laptop','Building']
 //var customers = ['22', '39', '61'];
  
 // Utility to start demo and help navigate between scenarios
@@ -349,12 +349,6 @@ bot.dialog('dialogMain', [
         builder.Prompts.text(session, 'How can I help you today?');
     },
 
-    function (session, results, next) { 
-        //session.sendTyping();
-        builder.Prompts.text(session, 'Sure, tell me what you would like to know?');
-   
-    },
-
  //
     function (session, results, next) { 
    if (session.userData.policy.scenario === 'Laptop') 
@@ -367,10 +361,12 @@ bot.dialog('dialogMain', [
 
         }
 
-        else if (session.userData.policy.scenario === 'Car') 
+    /*    else if (session.userData.policy.scenario === 'Car') 
             {
                 session.beginDialog('dialogCar');
-             }
+                   }
+
+                   */
 
     else {session.send('I\'m still in training and not sure i can answer your question confidently.  Try again?')
     }
