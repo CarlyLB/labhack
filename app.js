@@ -132,22 +132,173 @@ bot.dialog('dialogLaptop', [
             function (session, result) {
                 session.send('You might want to consider adding specific items cover to your policy so that you are covered for the full value of your laptop.');
                 session.sendTyping();
-                builder.Prompts.choice(session, 'Would you like me to take you to your policy so that you can obtain a quote for this additional cover?', 'Yes|No',
+                builder.Prompts.choice(session, 'Would you like me to take you to your policy so that you can obtain a quote for this additional cover?', 'Yes please!|No thanks',
                         {listStyle: builder.ListStyle.button}); 
             },
             
             function (session, result) {
-                            if (result.response.entity === 'Yes')  {
-                                session.send('I will take you there now');
+                            if (result.response.entity === 'Yes please!')  {
+                                session.send('I will take you there now....');
                                 session.sendTyping();
-                                session.send('Bot links Customer on Suncorp Marketplace where they can take out additional cover');
-                                session.endConversation(messages.nice_day);
+                                session.beginDialog('dialogSUNUpdateCover');
                             } else {
                                 session.endConversation(messages.nice_day);
                             }
                         },
 ]); 
 
+
+
+bot.dialog('dialogSUNUpdateCover' ,  
+
+    function (session ) {  
+                                
+        if (session.message && session.message.value ) {
+              // A Card's Submit Action obj was received
+             processSubmitAction(session, session.message.value);
+               return;
+                }
+                                    
+                                            var card = {
+                                                'contentType': 'application/vnd.microsoft.card.adaptive',
+                                                'content': {
+                                                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                                                    "type": "AdaptiveCard",
+                                                    "version": "0.5",
+                                                    "body": [
+                                                        {
+                                                 
+                                                            "type": "ColumnSet",
+                                                            "columns": [
+                                                                {
+                                                                    "type": "Column",
+                                                                    "size": 2,
+                                                                    "items": [
+                                                                        {
+                                                                            "type": "TextBlock",
+                                                                            "text": "Suncorp Marketplace",
+                                                                            "weight": "normal",
+                                                                            "size": "extraLarge"
+                                                                        },
+                                                                       
+                                                                        {
+                                                                            "type": "TextBlock",
+                                                                            "text": "Click the link below to update your cover.",
+                                                                            "wrap": true
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                {
+                                                                    "type": "Column",
+                                                                    "size": 1,
+                                                                    "items": [
+                                                                        {
+                                                                            "type": "Image",
+                                                                            "url": "https://www.suncorp.com.au/content/dam/suncorp/corporate/images/logos/Suncorp_New_Logo.png",
+                                                                            "size": "auto"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "actions": [
+                                                        {
+                                                            "type": "Action.OpenUrl",
+                                                            "title": "Update my cover",
+                                                            "url": "https://www.suncorp.com.au/insurance/manage-your-policy.html#home-contents-landlord"
+                                                        }
+                                                    ]
+                                                }
+                                             };
+                      var msg = new builder.Message(session)
+                      .addAttachment(card);
+                         session.send(msg); 
+                         session.endConversation();
+                     } 
+          )  
+
+ function processSubmitAction(session, value) {
+   var defaultErrorMessage = 'Please complete all the search parameters';
+                                switch (value.type) { 
+                                        
+                                    default:
+                                        // A form data was received, invalid or incomplete since the previous validation did not pass
+                                        session.send(defaultErrorMessage);
+                                }
+                            }
+
+
+
+    bot.dialog('dialogAAMIReplace' ,  
+                            
+                                function (session ) {  
+                                                            
+                                    if (session.message && session.message.value ) {
+                                          // A Card's Submit Action obj was received
+                                         processSubmitAction(session, session.message.value);
+                                           return;
+                                            }
+                                                                
+                                                                        var card = {
+                                                                            'contentType': 'application/vnd.microsoft.card.adaptive',
+                                                                            'content': {
+                                                                                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                                                                                "type": "AdaptiveCard",
+                                                                                "version": "0.5",
+                                                                                "body": [
+                                                                                    {
+                                                                             
+                                                                                        "type": "ColumnSet",
+                                                                                        "columns": [
+                                                                                            {
+                                                                                                "type": "Column",
+                                                                                                "size": 2,
+                                                                                                "items": [
+                                                                                                    {
+                                                                                                        "type": "TextBlock",
+                                                                                                        "text": "Suncorp Marketplace",
+                                                                                                        "weight": "normal",
+                                                                                                        "size": "extraLarge"
+                                                                                                    },
+                                                                                                   
+                                                                                                    {
+                                                                                                        "type": "TextBlock",
+                                                                                                        "text": "Click the link below to get a quote.",
+                                                                                                        "wrap": true
+                                                                                                    }
+                                                                                                ]
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "Column",
+                                                                                                "size": 1,
+                                                                                                "items": [
+                                                                                                    {
+                                                                                                        "type": "Image",
+                                                                                                        "url": "https://www.aami.com.au/content/dam/suncorp/insurance/aami/logos/aami-crc-icon.png",
+                                                                                                        "size": "auto"
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                ],
+                                                                                "actions": [
+                                                                                    {
+                                                                                        "type": "Action.OpenUrl",
+                                                                                        "title": "Get a quote",
+                                                                                        "url": "https://www.aami.com.au/home-insurance/building-and-contents.html"
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                         };
+                                                  var msg = new builder.Message(session)
+                                                  .addAttachment(card);
+                                                     session.send(msg); 
+                                                     session.endConversation();
+                                                 } 
+                                      )  
+            
 
 bot.dialog('dialogBuilding', [
     function (session, results, next) { 
@@ -163,10 +314,9 @@ bot.dialog('dialogBuilding', [
         
             function (session, result) {
                             if (result.response.entity === 'Yes Please!')  {
-                                session.send('I will take you there now');
+                                session.send('I will take you there now....');
                                 session.sendTyping();
-                                session.send('Bot links Customer to AAMI quote');
-                                session.endConversation(messages.nice_day);
+                                session.beginDialog('dialogAAMIReplace')
                             } else {
                                 session.endConversation(messages.nice_day);
                             }
