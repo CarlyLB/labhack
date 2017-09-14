@@ -121,17 +121,17 @@ bot.dialog('Help', [
 bot.dialog('dialogLaptop', [
     function (session, results, next) { 
                 session.send('Great question!');
-                session.sendTyping();
+                //session.sendTyping();
                 session.send('I can see here that you have Suncorp Classics Advantages Home and Contents policy and that you have taken out the optional Personal Valuables Unspecified Items Cover.');
-                session.sendTyping();
+               //session.sendTyping();
                 session.send('With this cover we would pay up to $1,000 towards your damaged laptop.');
-                session.sendTyping();
+                //session.sendTyping();
                 builder.Prompts.text(session, 'Do you know how much your laptop is worth?');
             },
         
             function (session, result) {
                 session.send('You might want to consider adding specific items cover to your policy so that you are covered for the full value of your laptop.');
-                session.sendTyping();
+                //session.sendTyping();
                 builder.Prompts.choice(session, 'Would you like me to take you to your policy so that you can obtain a quote for this additional cover?', 'Yes please!|No thanks',
                         {listStyle: builder.ListStyle.button}); 
             },
@@ -139,7 +139,7 @@ bot.dialog('dialogLaptop', [
             function (session, result) {
                             if (result.response.entity === 'Yes please!')  {
                                 session.send('I will take you there now....');
-                                session.sendTyping();
+                                //session.sendTyping();
                                 session.beginDialog('dialogSUNUpdateCover');
                             } else {
                                 session.endConversation(messages.nice_day);
@@ -303,11 +303,11 @@ bot.dialog('dialogSUNUpdateCover' ,
 bot.dialog('dialogBuilding', [
     function (session, results, next) { 
                 //session.send('Great question!');
-                session.sendTyping();
+                //session.sendTyping();
                 session.send('Yes, I can see that your GIO Home and Contents insurance covers building damage of up to $500,000');
-                session.sendTyping();
+                //session.sendTyping();
                 session.send('Did you know that AAMI comprehensive insurance covers the complete replacement of your home with no limit.');
-                session.sendTyping();
+                //session.sendTyping();
                 builder.Prompts.choice(session, 'Is this something you might be interested in?', 'Yes Please!|No thanks',
                 {listStyle: builder.ListStyle.button}); 
             },
@@ -315,7 +315,7 @@ bot.dialog('dialogBuilding', [
             function (session, result) {
                             if (result.response.entity === 'Yes Please!')  {
                                 session.send('I will take you there now....');
-                                session.sendTyping();
+                                //session.sendTyping();
                                 session.beginDialog('dialogAAMIReplace')
                             } else {
                                 session.endConversation(messages.nice_day);
@@ -326,15 +326,15 @@ bot.dialog('dialogBuilding', [
 bot.dialog('dialogCar', [
     function (session, results, next) { 
                 //session.send('Great question!');
-                session.sendTyping();
+                //session.sendTyping();
                 session.send('Does this have anything to do with your transactions at 3am last night? :o');
-                session.sendTyping();
+                //session.sendTyping();
                 session.send('You may be suprised to know that your replacement keys are actually covered by your AAMI comprehensive car insurance!');
-                session.sendTyping();
+                //session.sendTyping();
                 session.send('We\'ll cover you for up to $1,000 to replace and recode your keys.');
-                session.sendTyping();
+                //session.sendTyping();
                 session.send('I can see that you also have the optional AAMI Roadside Assist, so we can send someone out to let you into your car as well!.');
-                session.sendTyping();
+                //session.sendTyping();
                 session.endConversation();
     
             }
@@ -345,12 +345,12 @@ bot.dialog('dialogCar', [
 bot.dialog('dialogMain', [  
 
     function (session) { 
-        session.sendTyping();
+        //session.sendTyping();
         builder.Prompts.text(session, 'How can I help you today?');
     },
 
     function (session, results, next) { 
-        session.sendTyping();
+        //session.sendTyping();
         builder.Prompts.text(session, 'Sure, tell me what you would like to know?');
    
     },
@@ -378,7 +378,7 @@ bot.dialog('dialogMain', [
 
 /// Dialog close
     function (session, result, next) {
-        session.sendTyping();
+        //session.sendTyping();
         session.endConversation(messages.nice_day);
     } , 
 ]); 
