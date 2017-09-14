@@ -73,5 +73,8 @@ bot.dialog('/lifeDialog',
 */
 
 bot.dialog('/', function (session) {
-    session.send('Hi! I\'m Chatty. Ask me questions you have about Marketplace!');
+    session.send('Hi! I\'m Daisy, your personal insurance cover assistant.') ,
+    builder.Prompts.text(session, 'How can I help you today?',   
+        {listStyle: builder.ListStyle.button})  
 });
+
