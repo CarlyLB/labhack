@@ -37,9 +37,8 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 var bot = new builder.UniversalBot(connector);
  
-// LUIS model for intent and entities extraction
-//var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/bf0d182e-6437-497a-9998-5cb2c96e0f1c?subscription-key=3c96b72c44d947fea660e0ecf0560be0&staging=true&verbose=true&timezoneOffset=0&q=';
-var model = process.env.LUIS_URL || 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/7a7308a7-7f10-48b9-92ea-7cf400006895?subscription-key=3c96b72c44d947fea660e0ecf0560be0&verbose=true&timezoneOffset=0&q=';
+// LUIS model 
+var model = process.env.LUIS_URL;
 var luis = new builder.LuisRecognizer(model);
  
 //globalTunnel.end();
@@ -70,12 +69,8 @@ bot.use(builder.Middleware.dialogVersion({
 var messages = {
     select_scenario: 'Please select a scenario for the labhack demo',
     intro: 'Hi %s, I\'m Benjamin Botton....' ,
-    get_started: ' There are a few things I need from you, do you have few minutes to go through it now?',
     help_prompt: 'Hi %s, how can I help you today?',
-    nice_day: 'Have a nice day.',
-    contact_detail: 'Last thing, we have the following details on file for you:'+
-                    '\n\n\n  * Mobile : %s'+
-                    '\n\n\n  * Email  : %s'
+
 }
 
 /*
