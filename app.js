@@ -78,31 +78,28 @@ var messages = {
                     '\n\n\n  * Email  : %s'
 }
 
+/*
 var scenario = ['Laptop','Building']
 //var customers = ['22', '39', '61'];
  
 // Utility to start demo and help navigate between scenarios
 bot.dialog('dialogStartDemo', [
-    function (session) { 
+ /*   function (session) { 
    
         builder.Prompts.choice(session, messages.select_scenario, scenario,
             {listStyle: builder.ListStyle.button});
     },
+  
     function (session, results) {
         session.userData.policy = pd.lookupPolicy(results.response.entity);
         session.beginDialog('dialogGreetings');
     }
 ]);
- 
+*/
+
 bot.dialog('dialogGreetings', [
     function (session) {
         // for demo
-        session.conversationData.firstTime = true;
-        // For demo purpose we don't persist beyond conversation
-        if (session.conversationData.firstTime) {
-            session.send(messages.intro, session.userData.policy.firstName);
-            //session.conversationData.firstTime = false; 
-        }
         session.beginDialog('dialogMain');
     }
 ]);
@@ -117,6 +114,7 @@ bot.dialog('Help', [
     }
 ]); 
 
+/*
 
 bot.dialog('dialogLaptop', [
     function (session, results, next) { 
@@ -142,7 +140,7 @@ bot.dialog('dialogLaptop', [
                                 //session.sendTyping();
                                 session.beginDialog('dialogSUNUpdateCover');
                             } else {
-                                session.endConversation(messages.nice_day);
+                                session.endDialogWithResult();
                             }
                         },
 ]); 
@@ -214,7 +212,7 @@ bot.dialog('dialogSUNUpdateCover' ,
                       var msg = new builder.Message(session)
                       .addAttachment(card);
                          session.send(msg); 
-                         session.endConversation();
+                   session.beginDialog()
                      } 
           )  
 
@@ -295,12 +293,18 @@ bot.dialog('dialogSUNUpdateCover' ,
                                                   var msg = new builder.Message(session)
                                                   .addAttachment(card);
                                                      session.send(msg); 
-                                                     session.endConversation();
+                                                     session.endDialogWithResult();
                                                  } 
                                       )  
             
 
 bot.dialog('dialogBuilding', [
+ 
+
+    function (session, results, next) { 
+        builder.Prompts.text(session, 'Was there anything else I can help you with?');
+    }
+     
     function (session, results, next) { 
                 //session.send('Great question!');
                 //session.sendTyping();
@@ -318,7 +322,7 @@ bot.dialog('dialogBuilding', [
                                 //session.sendTyping();
                                 session.beginDialog('dialogAAMIReplace')
                             } else {
-                                session.endConversation(messages.nice_day);
+                                session.endDialogWithResult();
                             }
                         },
 ]); 
@@ -339,9 +343,8 @@ bot.dialog('dialogCar', [
     
             }
 ]); 
-
-
-// Main journey for checking for coverage
+ 
+ // Main journey for checking for coverage
 bot.dialog('dialogMain', [  
 
     function (session) { 
@@ -366,15 +369,73 @@ bot.dialog('dialogMain', [
                 session.beginDialog('dialogCar');
                    }
 
-                   */
+                   
 
     else {session.send('I\'m still in training and not sure i can answer your question confidently.  Try again?')
     }
 },
+*/
 
-/// Dialog close
-    function (session, result, next) {
+/// Main journey for checking for coverage
+bot.dialog('dialogMain', [  
+
+    function (session) { 
         //session.sendTyping();
-        session.endConversation(messages.nice_day);
-    } , 
+        builder.Prompts.text(session, 'Hi Marty, I\'m Benjamin Botton.  How can I help you today?');
+    },
+
+ //
+ function (session, results, next) { 
+    session.send('Great question!');
+    //session.sendTyping();
+    session.send('I can see here that you have Suncorp Classics Advantages Home and Contents policy and that you have taken out the optional Personal Valuables Unspecified Items Cover.');
+   //session.sendTyping();
+    session.send('With this cover we would pay up to $1,000 towards your damaged laptop.');
+    //session.sendTyping();
+    builder.Prompts.text(session, 'Do you know how much your laptop is worth?');
+},
+
+function (session, results, next) {
+    session.send('You might want to consider adding specific items cover to your policy so that you are covered for the full value of your laptop.');
+    //session.sendTyping();
+    builder.Prompts.choice(session, 'Would you like me to take you to your policy so that you can obtain a quote for this additional cover?', 'Yes please!|No thanks',
+            {listStyle: builder.ListStyle.button}); 
+},
+
+/*
+function (session, results,next) {
+                if (result.response.entity === 'Yes please!')  {
+                    session.send('I will take you there now....');
+                    //session.sendTyping();
+                    //session.beginDialog('dialogSUNUpdateCover');
+                } else {
+                    next({response :""})
+                }
+            },
+*/
+    function (session, results, next) { 
+        //session.sendTyping();
+        session.send('I will take you there now.... placeholder');
+        builder.Prompts.text(session, 'Was there anything else I can help you with?');
+        },
+
+
+        function (session, results, next) { 
+            //session.send('Great question!');
+            //session.sendTyping();
+            session.send('Yes, I can see that your GIO Home and Contents insurance covers building damage of up to $500,000');
+            //session.sendTyping();
+            session.send('Did you know that AAMI comprehensive insurance covers the complete replacement of your home with no limit.');
+            //session.sendTyping();
+            builder.Prompts.choice(session, 'Is this something you might be interested in?', 'Yes Please!|No thanks',
+            {listStyle: builder.ListStyle.button}); 
+        },
+    
+        function (session, results, next) { 
+            //session.sendTyping();
+            session.send('I will take you there now.... placeholder');
+            builder.Prompts.text(session, 'Was there anything else I can help you with?');
+            },
 ]); 
+    
+ 
