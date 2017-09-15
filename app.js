@@ -381,7 +381,7 @@ bot.dialog('dialogMain', [
 
     function (session) { 
         //session.sendTyping();
-        builder.Prompts.text(session, 'Hi Marty, I\'m Benjamin Botton.  How can I help you today?');
+        builder.Prompts.text(session, 'Hi Mark, I\'m Benjamin Botton.  How can I help you today?');
     },
 
  //
@@ -413,11 +413,32 @@ function (session, results,next) {
                 }
             },
 */
+   function (session, results, next) { 
+            //session.sendTyping();
+            session.send('I will take you there now....');
+
+            var welcomeCard = new builder.HeroCard(session)
+            .title('Suncorp Market Place')
+            .subtitle('Upgrade your cover...')
+            .images([
+                new builder.CardImage(session)
+                    .url('https://www.suncorp.com.au/content/dam/suncorp/corporate/images/logos/Suncorp_New_Logo.png')
+                
+            ])
+         ;
+        
+        session.send(new builder.Message(session)
+            .addAttachment(welcomeCard));
+            builder.Prompts.text(session, 'Was there anything else I can help you with?');
+            },
+/*
     function (session, results, next) { 
         //session.sendTyping();
         session.send('I will take you there now.... placeholder');
         builder.Prompts.text(session, 'Was there anything else I can help you with?');
         },
+
+  */      
 
 
         function (session, results, next) { 
@@ -433,8 +454,21 @@ function (session, results,next) {
     
         function (session, results, next) { 
             //session.sendTyping();
-            session.send('I will take you there now.... placeholder');
-            builder.Prompts.text(session, 'Was there anything else I can help you with?');
+            session.send('I will take you there now....');
+
+            var welcomeCard = new builder.HeroCard(session)
+            .title('Suncorp Market Place')
+            .subtitle('Get a quote...')
+            .images([
+                new builder.CardImage(session)
+                    .url('https://www.aami.com.au/content/dam/suncorp/insurance/aami/logos/aami-crc-icon.png')
+                
+            ])
+         ;
+        
+        session.send(new builder.Message(session)
+            .addAttachment(welcomeCard));
+           // builder.Prompts.text(session, 'Was there anything else I can help you with?');
             },
 ]); 
     
